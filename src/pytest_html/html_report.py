@@ -146,6 +146,7 @@ class HTMLReport:
         cells = [
             html.th("Result", class_="sortable result initial-sort", col="result"),
             html.th("Test", class_="sortable", col="name"),
+            html.th("Time", class_="sortable", col="time"),
             html.th("Duration", class_="sortable", col="duration"),
             html.th("Links", class_="sortable links", col="links"),
         ]
@@ -269,6 +270,7 @@ class HTMLReport:
             full_text = ""
             extras = []
             duration = 0.0
+            start_time = None
 
             # in theory the last one should have all logs so we just go
             #  through them all to figure out the outcome, xfail, duration,
@@ -281,6 +283,11 @@ class HTMLReport:
                     full_text += test_report.longreprtext
                     extras.extend(getattr(test_report, "extra", []))
                     duration += getattr(test_report, "duration", 0.0)
+                    start_time = (
+                        getattr(test_report, "start", None)
+                        if start_time is None
+                        else start_time
+                    )
 
                     if (
                         test_report.outcome not in ("passed", "rerun")
@@ -305,6 +312,7 @@ class HTMLReport:
             test_report.longrepr = full_text
             test_report.extra = extras
             test_report.duration = duration
+            test_report.starttime = start_time
 
             if wasxfail:
                 test_report.wasxfail = True

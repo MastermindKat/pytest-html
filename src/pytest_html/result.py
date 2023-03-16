@@ -4,6 +4,7 @@ import time
 import warnings
 from base64 import b64decode
 from base64 import b64encode
+from datetime import datetime
 from html import escape
 from os.path import isfile
 from pathlib import Path
@@ -31,6 +32,11 @@ class TestResult:
         self.logfile = logfile
         self.config = config
         self.row_table = self.row_extra = None
+        self.start_time = (
+            None
+            if getattr(report, "start", None) is None
+            else datetime.fromtimestamp(report.start)
+        )
 
         test_index = hasattr(report, "rerun") and report.rerun + 1 or 0
 
@@ -47,6 +53,7 @@ class TestResult:
         cells = [
             html.td(self.outcome, class_="col-result"),
             html.td(self.test_id, class_="col-name"),
+            html.td(self.start_time, class_="col-time"),
             html.td(self.formatted_time, class_="col-duration"),
             html.td(self.links_html, class_="col-links"),
         ]
